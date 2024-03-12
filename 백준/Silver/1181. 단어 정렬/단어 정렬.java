@@ -1,9 +1,10 @@
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+
+    /* 
+    이렇게 할 필요 없이 단순 sort를 재정의 해주면 된다
     static class StringC implements Comparable<StringC> {
         String word;
         public StringC(String word) {
@@ -23,19 +24,29 @@ public class Main {
             }
         }
     }
+    */ 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
         int n = Integer.parseInt(br.readLine());
-        StringC[] words = new StringC[n];
+        String[] words = new String[n];
         for (int i = 0; i < n; i++) {
-            words[i] = new StringC(br.readLine());
+            words[i] = br.readLine();
         }
-        Arrays.sort(words);
-        sb.append(words[0].word).append("\n");
+        Arrays.sort(words, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.length() == o2.length()){
+                    return o1.compareTo(o2);
+                } else {
+                    return o1.length() - o2.length();
+                }
+            }
+        });
+        sb.append(words[0]).append("\n");
         for (int i = 1; i < n; i++) {
-            if (!words[i].word.equals(words[i - 1].word)) {
-                sb.append(words[i].word).append("\n");
+            if (!words[i].equals(words[i - 1])) {
+                sb.append(words[i]).append("\n");
             }
         }
         System.out.print(sb);
