@@ -14,11 +14,11 @@ public class Main {
         HashMap<Integer, Integer> map = new HashMap<>();
         int n = Integer.parseInt(br.readLine());
         int[] arr = new int[n];
+        int[] arr2 = new int[n];
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+            arr2[i] = arr[i] = Integer.parseInt(st.nextToken());
         }
-        int[] arr2 = arr.clone();
         Arrays.sort(arr2);
         int temp = 0;
         for (int i = 0; i < n; i++) {
