@@ -2,15 +2,16 @@
 #include <algorithm>
 using namespace std;
 
-int commonDivisor(int a, int b) {
-    int min = std::min(a, b);
-    int commonDivisor;
-    for (int i = 1; i <= min; i++) {
-        if ((a % i == 0) && (b % i == 0)) {
-            commonDivisor = i;
-        }
-    }
-    return commonDivisor;
+// 최대공약수를 구하는 함수 (유클리드 호제법 이용)
+int gcd(int a, int b) {
+	int r = a % b;
+	if (r == 0) {
+		return b;
+	}
+	else {
+		return gcd(b, r);
+	}
+	
 }
 
 int main(void) {
@@ -18,6 +19,6 @@ int main(void) {
     cin >> t;
     for (int i = 0; i < t; i++) {
         cin >> a >> b;
-        cout << a * b / commonDivisor(a, b) << '\n';
+        cout << a * b / gcd(a, b) << '\n';
     }
 }
