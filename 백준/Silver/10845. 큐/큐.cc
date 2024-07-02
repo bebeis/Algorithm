@@ -2,6 +2,9 @@
 using namespace std;
 
 int main(void) {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
     queue<int> que;
     int n, val;
     string inst;
