@@ -2,29 +2,30 @@
 using namespace std;
 int white = 0;
 int blue = 0;
+int colorPaper[128][128];
 
-void partition(vector<vector<int>>& colorPaper, int n, pair<int, int> pos) {
+void partition(int n, int x, int y) {
     if (n == 1) {
-        (colorPaper[pos.second][pos.first] == 1) ? blue++ : white++;
+        (colorPaper[y][x] == 1) ? blue++ : white++;
         return;
     }
     bool square = true;
-    for (int i = pos.second; i < pos.second + n; i++) {
-        for (int j = pos.first; j < pos.first + n; j++) {
-            if (colorPaper[i][j] != colorPaper[pos.second][pos.first]) {
+    for (int i = y; i < y + n; i++) {
+        for (int j = x; j < x + n; j++) {
+            if (colorPaper[i][j] != colorPaper[y][x]) {
                 square = false;
                 break;
             }
         }
     }
     if (square == true) {
-        (colorPaper[pos.second][pos.first] == 1) ? blue++ : white++;
+        (colorPaper[y][x] == 1) ? blue++ : white++;
     }
     else {
-        partition(colorPaper, n / 2, pos);
-        partition(colorPaper, n / 2, make_pair(pos.first + n / 2, pos.second));
-        partition(colorPaper, n / 2, make_pair(pos.first, pos.second + n / 2));
-        partition(colorPaper, n / 2, make_pair(pos.first + n / 2, pos.second + n / 2));
+        partition(n / 2, x, y);
+        partition(n / 2, x + n / 2, y);
+        partition(n / 2, x, y + n / 2);
+        partition(n / 2, x + n / 2, y + n / 2);
     }
 }
 
@@ -33,14 +34,12 @@ int main(void) {
     cin.tie(NULL);
     cout.tie(NULL);
     int n;
-    pair<int, int> initPos(0, 0);
     cin >> n;
-    vector<vector<int>> colorPaper(n, vector<int>(n));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             cin >> colorPaper[i][j];
         }
     }
-    partition(colorPaper, n, initPos);
+    partition(n, 0, 0);
     cout << white << '\n' << blue;
 }
