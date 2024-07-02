@@ -13,10 +13,10 @@ int main(void) {
         cin >> inst;
         if (inst == "push_front") {
             cin >> x;
-            deq.emplace_front(x);
+            deq.push_front(x);
         } else if (inst == "push_back") {
             cin >> x;
-            deq.emplace_back(x);
+            deq.push_back(x);
         } else if (inst == "pop_front") {
             if (deq.size()) {
                 cout << deq.front() << '\n';
