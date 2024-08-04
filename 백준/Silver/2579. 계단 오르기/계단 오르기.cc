@@ -1,31 +1,34 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 계단 조건을 무시하면
-// d[i] = d[i - 1] + score[i];
+// 문제 변환
+// 점수가 최대가 되려면, 밟지 않은 계단의 점수 합이 최소가 되면 된다.
+// k번째를 안밟았다 --> k-1번째를 밟았다 --> k-2 에서 k-1 또는 K-3에서 k-1
 
-// i번째를 첫 번째 차원으로, 연속으로 밟은 계단의 개수를 두 번째 차원으로 설정하면 되지 않을까?
+// 점화식
+// d(k) = min(d(k - 2), d(k - 3)) + score(k);
 
-// 테이블 정의
-int d[301][3]; // [1],[2]에는 해당 케이스 분류
+int d[301];
 int score[301];
 
 int main(void) {
     ios::sync_with_stdio(false);
     cin.tie(0); cout.tie(0);
-    int n;
+    int n, total = 0;
     cin >> n;
     for (int i = 1; i <= n; i++) {
         cin >> score[i];
+        total += score[i];
     }
     // 기저 조건
-    d[1][1] = score[1];
-    // 점화식 구현
-    for (int i = 2; i <= n; i++) {
-        // 연속 1칸 점프해서 도착 --> 2단 점프 다음 1단
-        d[i][1] = max(d[i - 2][1], d[i - 2][2]) + score[i];
-        // 연속 2칸 점프해서 도착
-        d[i][2] = d[i - 1][1] + score[i];
+    if (n <= 2) {
+        cout << total;
+        return 0;
     }
-    cout << max(d[n][1], d[n][2]);
+    d[1] = score[1]; d[2] = score[2]; d[3] = score[3];
+    // 점화식 구현
+    for (int i = 4; i < n; i++) {
+        d[i] = min(d[i - 2], d[i - 3]) + score[i];
+    }
+    cout << total - min(d[n - 2], d[n - 1]);
 }
