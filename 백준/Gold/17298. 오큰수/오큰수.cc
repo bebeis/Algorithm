@@ -1,24 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// time limit : 1s, N <= 1,000,000 : O(NlogN) 이하로 해결
+int result[1000001];
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n, val;
-    cin >> n;
-    stack<pair<int, int>> a; // {index, value}
-    vector<int> output(n, -1);
-    for (int i = 0; i < n; i++) {
-        cin >> val;
-        while (!a.empty() && a.top().second < val) {
-            output[a.top().first] = val;
-            a.pop();
+    cin.tie(0)->sync_with_stdio(false);
+
+    int n; cin >> n;
+    stack<pair<int, int>> S;
+    for (int i = 1; i <= n; i++) {
+        int x; cin >> x;
+        while (!S.empty() && S.top().second < x) {
+            result[S.top().first] = x;
+            S.pop();
         }
-        a.push({i, val});
+        S.push({i, x});
     }
-    for (int &x : output) {
-        cout << x << " ";
+
+    while (!S.empty()) {
+        result[S.top().first] = -1;
+        S.pop();
     }
+
+    for (int i = 1; i <= n; i++) cout << result[i] << ' ';
 }
