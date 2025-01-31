@@ -1,62 +1,67 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int dx[4] = { 1, 0, -1, 0 };
-int dy[4] = { 0, 1, 0, -1 };
-
-char adj[102][102];
-bool vis[102][102];
 int n;
+char board[101][101];
+bool vis[101][101];
+int dx[] = {1, 0, -1, 0};
+int dy[] = {0, 1, 0, -1};
+int normalCnt = 0;
+int abnormalCnt = 0;
 
-void DFS(int x, int y, char c) {
+void bfs(int x, int y, char c) {
+    queue<pair<int, int>> Q;
+    Q.push({x, y});
     vis[x][y] = 1;
-    for (int i = 0; i < 4; i++) {
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-        if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
-        if (!vis[nx][ny] && adj[nx][ny] == c) {
+
+    while (!Q.empty()) {
+        auto [cx, cy] = Q.front();
+        Q.pop();
+
+        for (int i = 0; i < 4; i++) {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
+
+            if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+            if (vis[nx][ny] || board[nx][ny] != c) continue;
             vis[nx][ny] = 1;
-            DFS(nx, ny, c);
+            Q.push({nx, ny});
         }
     }
 }
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
+    cin.tie(0)->sync_with_stdio(false);
     cin >> n;
-    int count = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            cin >> adj[i][j];
+            cin >> board[i][j];
         }
     }
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (!vis[i][j]) {
-                DFS(i, j, adj[i][j]);
-                count++;
+                bfs(i, j, board[i][j]);
+                normalCnt++;
             }
         }
     }
-    cout << count << " ";
-    count = 0;
+
     memset(vis, 0, sizeof(vis));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (adj[i][j] == 'G') {
-                adj[i][j] = 'R';
-            }
+            if (board[i][j] == 'R') board[i][j] = 'G';
         }
     }
+
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (!vis[i][j]) {
-                DFS(i, j, adj[i][j]);
-                count++;
+                bfs(i, j, board[i][j]);
+                abnormalCnt++;
             }
         }
     }
-    cout << count;
+    cout << normalCnt << ' ' << abnormalCnt;
 }
