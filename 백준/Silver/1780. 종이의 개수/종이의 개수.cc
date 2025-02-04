@@ -1,52 +1,43 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int arr[2188][2188];
+int n;
+int board[2200][2200];
+int result[3]; // -1, 0, 1
 
-int result[3];
+void partition(int cx, int cy, int length) {
+    int first = board[cx][cy];
+    for (int i = cx; i < cx + length; i++) {
+        for (int j = cy; j < cy + length; j++) {
+            if (board[i][j] != first) {
+                int thirdLength = length / 3;
+                partition(cx, cy, thirdLength);
+                partition(cx + thirdLength, cy, thirdLength);
+                partition(cx + 2 * thirdLength, cy, thirdLength);
 
-void partition(int n, int x, int y) {
-    if (n == 1) {
-        result[arr[x][y] + 1]++;
-        return;
-    }
-    int tmp = arr[x][y];
-    bool square = true;
-    for (int i = x; i < x + n; i++) {
-        for (int j = y; j < y + n; j++) {
-            if (tmp != arr[i][j]) {
-                square = false;
-                break;
+                partition(cx, cy + thirdLength, thirdLength);
+                partition(cx + thirdLength, cy + thirdLength, thirdLength);
+                partition(cx + 2 * thirdLength, cy + thirdLength, thirdLength);
+
+                partition(cx, cy + thirdLength * 2, thirdLength);
+                partition(cx + thirdLength, cy + thirdLength * 2, thirdLength);
+                partition(cx + 2 * thirdLength, cy + thirdLength * 2, thirdLength);
+                return;
             }
         }
     }
-    if (square) {
-        result[arr[x][y] + 1]++;
-    } else {
-        partition(n / 3, x, y);
-        partition(n / 3, x + n / 3, y);
-        partition(n / 3, x + n * 2 / 3, y);
-        partition(n / 3, x, y + n / 3);
-        partition(n / 3, x + n / 3, y + n / 3);
-        partition(n / 3, x + n * 2 / 3, y + n / 3);
-        partition(n / 3, x, y + n * 2 / 3);
-        partition(n / 3, x + n / 3, y + n * 2 / 3);
-        partition(n / 3, x + n * 2 / 3, y + n * 2 / 3);
-    }
+    result[first + 1]++;
 }
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n;
+    cin.tie(0)->sync_with_stdio(false);
     cin >> n;
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cin >> arr[i][j];
-        }
+        for (int j = 0; j < n; j++) cin >> board[i][j];
     }
-    partition(n, 0, 0);
-    for (int &k : result) {
-        cout << k << '\n';
-    }
+
+    partition(0, 0, n);
+    cout << result[0] << '\n';
+    cout << result[1] << '\n';
+    cout << result[2];
 }
