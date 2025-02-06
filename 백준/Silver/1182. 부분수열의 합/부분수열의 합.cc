@@ -1,24 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// DP로 풀어도 되지만 백트래킹으로 분류되어 있으므로 백트래킹으로 풀이
-
+int n, s;
 int arr[22];
-int n, s, result = 0;
+int cnt = 0;
 
-void partialSum(int target, int sum, bool check) {
-    if (target > n) return;
-    if (sum == s && check) {
-        result++;
+void partSum(int sum, int cur) {
+    if (cur >= n) return;
+    if (sum + arr[cur] == s) {
+        cnt++;
     }
-    partialSum(target + 1, sum + arr[target], true);
-    partialSum(target + 1, sum, false);
+    partSum(sum + arr[cur], cur + 1);
+    partSum(sum, cur + 1);
 }
+
 
 int main(void) {
     cin.tie(0)->sync_with_stdio(false);
+
     cin >> n >> s;
     for (int i = 0; i < n; i++) cin >> arr[i];
-    partialSum(0, 0, false);
-    cout << result;
+    partSum(0, 0);
+    cout << cnt;
 }
