@@ -1,22 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// tabulation 풀이
-// 처음에 테이블을 완성해둔 후 TC마다 출력해주면 된다
-int d[11];
+
+/**
+ * state: n, value: 방법의 수
+ */
+
+int dp[12];
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    d[1] = 1; d[2] = 2; d[3] = 4;
-    for (int i = 4; i < 11; i++) {
-        d[i] = d[i - 1] + d[i - 2] + d[i - 3];
+    cin.tie(0)->sync_with_stdio(false);
+    dp[0] = 1;
+    dp[1] = 1;
+    dp[2] = 2;
+    for (int i = 3; i <= 10; i++) {
+        dp[i] += dp[i - 1];
+        dp[i] += dp[i - 2];
+        dp[i] += dp[i - 3]; 
     }
-    int t;
-    cin >> t;
+
+    int t; cin >> t;
     while (t--) {
-        int n;
-        cin >> n;
-        cout << d[n] << '\n';
+        int n; cin >> n;
+        cout << dp[n] << '\n';
     }
 }
