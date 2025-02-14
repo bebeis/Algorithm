@@ -1,16 +1,17 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int d[1001];
+int dp[1002];
+int n;
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n;
+    cin.tie(0)->sync_with_stdio(false);
+
     cin >> n;
-    d[1] = 1; d[2] = 3;
-    for (int i = 3; i <= n; i++) {
-        d[i] = (d[i - 1] + 2 * d[i - 2]) % 10007;
+    dp[1] = 1;
+    dp[0] = 1;
+    for (int i = 2; i <= n; i++) {
+        dp[i] = (dp[i - 1] + 2 * dp[i - 2]) % 10007;
     }
-    cout << d[n];
+    cout << dp[n];
 }
