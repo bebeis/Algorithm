@@ -1,34 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+int arr[51];
+int sum = 0;
+char op[51];
+
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n, tmp = 0, result = 0;
-    bool open = false;
-    char opt;
-    cin >> n;
-    result += n;
-    while (cin >> opt) {
-        cin >> n;
-        if (opt == '-') {
-            if (!open) {
-                tmp += n;
-                open = true;
-            } else {
-                result -= tmp;
-                tmp = n;
-            }
-        } else {
-            if (!open) {
-                result += n;
-            } else {
-                tmp += n;
-            }
-        }
+    cin.tie(0)->sync_with_stdio(false);
+    cin >> arr[0];
+    sum = arr[0];
+    int idx = 0;
+    bool minus = false;
+    while (cin >> op[++idx]) {
+        cin >> arr[idx];
+        if (op[idx] == '-') minus = true;
+        if (minus) sum -= arr[idx];
+        else sum += arr[idx];
     }
-    if (open) {
-        result -= tmp;
-    }
-    cout << result;
+    cout << sum;
 }
