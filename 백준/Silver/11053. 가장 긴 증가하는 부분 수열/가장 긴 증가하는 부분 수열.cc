@@ -1,20 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// LIS 알고리즘
-// LIS 문제의 시간 복잡도를 개선하기 위해서 이분탐색을 사용한다.
-
 vector<int> arr;
 vector<int> dq;
-
-int binarySearch(int low, int high, int target) {
-    while (low < high) {
-        int mid = (low + high) / 2;
-        if (dq[mid] < target) low = mid + 1;
-        else high = mid;
-    }
-    return low;
-}
 
 int main(void) {
     ios::sync_with_stdio(false);
@@ -28,7 +16,7 @@ int main(void) {
     dq.push_back(arr[0]);
     for (int i = 1; i < n; i++) {
         if (dq.back() < arr[i]) dq.push_back(arr[i]);
-        else dq[binarySearch(0, dq.size() - 1, arr[i])] = arr[i];
+        else *lower_bound(dq.begin(), dq.end(), arr[i]) = arr[i];
     }
     cout << dq.size();
 }
