@@ -1,37 +1,57 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 양수 배열은 큰 것 부터 순회, 음수 배열은 작은 것 부터 순회한다.
-// 주의! 음수 X 음수(0포함)를 고려해야한다.
+int arr[52];
+int sum = 0;
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0);cout.tie(0);
-    int n, val, sum = 0;
-    cin >> n;
-    priority_queue<int, vector<int>, greater<int>> npq;
-    priority_queue<int, vector<int>, less<int>> ppq;
-    for (int i = 0; i < n; i++) {
-        cin >> val;
-        if (val <= 0) npq.push(val);
-        else ppq.push(val);
-    }
-    while (npq.size() >= 2) {
-        auto x1 = npq.top(); npq.pop();
-        auto x2 = npq.top(); npq.pop();
-        sum += x1 * x2;
-    }
-    if (!npq.empty()) sum += npq.top();
+    cin.tie(0)->sync_with_stdio(false);
 
-    while (ppq.size() >= 2) {
-        auto x1 = ppq.top(); ppq.pop();
-        auto x2 = ppq.top(); ppq.pop();
-        if (x1 + x2 < x1 * x2) sum += x1 * x2;
-        else {
-            sum += x1;
-            ppq.push(x2);
+    int n; cin >> n;
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    sort(arr, arr + n);
+    int i = 0, j = i + 1;
+    // {음수, 음수}, 
+    while (i < n && arr[i] <= 0) {
+        if (j == n) {
+            sum += arr[i];
+            break;
+        }
+        else if (arr[j] <= 0) {
+            sum += arr[i] * arr[j];
+            i += 2; j += 2;
+        } else { // 음수, 양수
+            sum += arr[i];
+            break;
         }
     }
-    if (!ppq.empty()) sum += ppq.top();
+    j = n - 1; i = j - 1;
+    while (j >= 0 && arr[j] > 0) {
+        if (i < 0) {
+            sum += arr[j];
+            break;
+        }
+        else if (arr[i] > 0) {
+            if (arr[i] * arr[j] > arr[i] + arr[j]) {
+                sum += arr[i] * arr[j];
+            } else {
+                sum += arr[i] + arr[j];
+            }
+            i -= 2; j -= 2;
+        } else {
+            sum += arr[j];
+            break;
+        }
+    }
     cout << sum;
+
+    // 양수, 양수 : 곱하기
+    // 0, 양수 : 각자 더하기
+    // 0, 0 : do nothing
+    // 음수, 양수 : 각자 더하기
+    // 음수, 0 : 곱하기
+    // 음수, 음수 : 곱하기
+    // -3 -2 -1 0 1 2 3
 }
