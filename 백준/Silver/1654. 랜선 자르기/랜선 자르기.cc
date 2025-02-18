@@ -1,32 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// brute force : O(KN) : 최대 10 000 000 000 --> TLE
-// 이분 분할을 통해 O(KlogN)으로 줄일 수 있음
+// 브루트 포스 : 0 ~ max(arr)까지 직접 다 잘라보며 길이의 합 최댓값을 찾는다.
+// O(NK)
+// 가능한 랜선 길이의 범위: 0 ~ max(arr): 21억
+// N을 로그 스케일로 줄여야 한다.
+// 길이를 줄일수록 랜선의 개수는 늘어난다.
+// 투머치하지 않고 딱 N이되는 순간이 최대가 될 것이다.
+// upper_bound에서 1칸 전이 된다는 것.
 
 int k, n;
-vector<int> input;
+long long arr[10003];
 
-long long getLength(long long min, long long max) {
-    if (min > max) return max;
-    long long mid = (min + max) / 2;
-    int cnt = 0;
-    for (auto x : input) {
-        cnt += x / mid;
+bool check(long long length) {
+    int sum = 0;
+    for (int i = 0; i < k; i++) {
+        sum += arr[i] / length;
     }
-    if (cnt < n) return getLength(min, mid - 1);
-    else return getLength(mid + 1, max);
+    if (sum >= n) return true;
+    return false;
+}
+
+long long findMaxLength() {
+    long long start = 1, end = (*max_element(arr, arr + k)) + 1;
+    while (start + 1 < end) {
+        long long mid = (start + end) / 2;
+        if (check(mid)) start = mid;
+        else end = mid;
+    }
+    return start;
 }
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int max = -1;
+    cin.tie(0)->sync_with_stdio(false);
     cin >> k >> n;
-    input.resize(k);
-    for (int i = 0; i < k; i++) {
-        cin >> input[i];
-        if (input[i] > max) max = input[i];
-    }
-    cout << getLength(1, max);
+    for (int i = 0; i < k; i++) cin >> arr[i];
+    cout << findMaxLength(); // 1: true, max + 1: false;
 }
