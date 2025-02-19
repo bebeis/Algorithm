@@ -1,40 +1,26 @@
-#include <iostream>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 
+struct compare {
+    bool operator()(int x, int y) {
+        if (abs(x) == abs(y)) return x > y;
+        return abs(x) > abs(y);
+    }
+};
+
+
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-    int n, x;
-    auto compare = [](int a, int b) { 
-        int p = abs(a);
-        int q = abs(b);
-        if (p > q) {
-            return true;
-        }
-        else if (p < q) {
-            return false;
-        }
-        else {
-            return a > b;
-        }
-    };
-    priority_queue<int, std::vector<int>, decltype(compare)> absHeap(compare);
-    cin >> n;
+    cin.tie(0)->sync_with_stdio(false);
+    int n; cin >> n;
+    priority_queue<int, vector<int>, compare> pq;
     while (n--) {
-        cin >> x;
-        if (x != 0) {
-            absHeap.push(x);
-        }
-        else {
-            if (absHeap.empty()) {
-                cout << 0 << '\n';
-            }
-            else {
-                cout << absHeap.top() << '\n';
-                absHeap.pop();
-            }
+        int x; cin >> x;
+        if (x != 0) pq.push(x);
+        else if (pq.empty()) {
+            cout << "0\n";
+        } else {
+            cout << pq.top() << '\n';
+            pq.pop();
         }
     }
 }
