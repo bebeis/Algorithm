@@ -1,40 +1,35 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 합집합 연산 + 두 원소가 같은 집합인지 => Union-Find
-
 int n, m;
+vector<int> parent(1000002, -1);
 
-int parent[1000001];
-
-int GetParent(int x) {
-    if (x == parent[x]) return x;
-    return parent[x] = GetParent(parent[x]);
+int find(int x) {
+    if (parent[x] < 0) return x;
+    return parent[x] = find(parent[x]);
 }
 
-void UnionParent(int a, int b) {
-    a = GetParent(a);
-    b = GetParent(b);
-    if (a < b) parent[b] = a;
-    else parent[a] = b;
-}
+bool uni(int u, int v) {
+    u = find(u);
+    v = find(v);
+    if (u == v) return false;
 
-void SameParent(int a, int b) {
-    a = GetParent(a);
-    b = GetParent(b);
-
-    if (a == b) cout << "YES\n";
-    else cout << "NO\n";
+    if (u < v) parent[v] = u;
+    else parent[u] = v;
+    return true;
 }
 
 int main(void) {
     cin.tie(0)->sync_with_stdio(false);
     cin >> n >> m;
-    for (int i = 1; i <= n; i++) parent[i] = i;
     while (m--) {
-        int inst, a, b;
-        cin >> inst >> a >> b;
-        if (inst) SameParent(a, b);
-        else UnionParent(a, b);
+        int cmd, a, b;
+        cin >> cmd >> a >> b;
+        if (cmd == 0) {
+            uni(a, b);
+        } else {
+            if (find(a) == find(b)) cout << "YES" << '\n';
+            else cout << "NO" << '\n';
+        }
     }
 }
