@@ -1,41 +1,38 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> adj[27];
-char lc[27];
-char rc[27];
-int n;
+int lc[28];
+int rc[28];
 
-void PreOrder(char cur) {
-    cout << cur;
-    if (lc[cur - 64] != 0) PreOrder(lc[cur - 64]);
-    if (rc[cur - 64] != 0) PreOrder(rc[cur - 64]);
+void pre(int cur) {
+    cout << (char)(cur + 'A');
+    if (lc[cur] != 0) pre(lc[cur]);
+    if (rc[cur] != 0) pre(rc[cur]);
 }
 
-void InOrder(char cur) {
-    if (lc[cur - 64] != 0) InOrder(lc[cur - 64]);
-    cout << cur;
-    if (rc[cur - 64] != 0) InOrder(rc[cur - 64]);
+void inorder(int cur) {
+    if (lc[cur] != 0) inorder(lc[cur]);
+    cout << (char)(cur + 'A');
+    if (rc[cur] != 0) inorder(rc[cur]);
 }
 
-void PostOrder(char cur) {
-    if (lc[cur - 64] != 0) PostOrder(lc[cur - 64]);
-    if (rc[cur - 64] != 0) PostOrder(rc[cur - 64]);
-    cout << cur;
+void post(int cur) {
+    if (lc[cur] != 0) post(lc[cur]);
+    if (rc[cur] != 0) post(rc[cur]);
+    cout << (char)(cur + 'A');
 }
 
 int main(void) {
     cin.tie(0)->sync_with_stdio(false);
-    cin >> n;
-    for (int i = 1; i <= n; i++) {
-        char parent, l, r;
-        cin >> parent >> l >> r;
-        if (l != '.') lc[parent - 64] = l;
-        if (r != '.') rc[parent - 64] = r;
+
+    int n; cin >> n;
+    for (int i = 0; i < n; i++) {
+        char cur, left, right;
+        cin >> cur >> left >> right;
+        if (left != '.') lc[cur - 'A'] = left - 'A';
+        if (right != '.') rc[cur - 'A'] = right - 'A';
     }
-    PreOrder('A');
-    cout << '\n';
-    InOrder('A');
-    cout << '\n';
-    PostOrder('A');
+    pre(0); cout << '\n';
+    inorder(0); cout << '\n';
+    post(0); cout << '\n';
 }
