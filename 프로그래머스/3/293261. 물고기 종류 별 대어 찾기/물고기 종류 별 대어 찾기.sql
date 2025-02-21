@@ -1,0 +1,11 @@
+-- 물고기 종류 별로 가장 큰 물고기의 ID, 물고기 이름, 길이를 출력
+-- 물고기의 ID 컬럼명은 ID, 이름 컬럼명은 FISH_NAME, 길이 컬럼명은 LENGTH
+-- 물고기의 ID에 대해 오름차순 정렬
+
+SELECT ID, FISH_NAME, LENGTH
+FROM FISH_INFO NATURAL JOIN FISH_NAME_INFO
+WHERE (FISH_TYPE, LENGTH) IN (
+    SELECT FISH_TYPE, MAX(LENGTH) AS LENGTH
+    FROM FISH_INFO
+    GROUP BY FISH_TYPE
+)
