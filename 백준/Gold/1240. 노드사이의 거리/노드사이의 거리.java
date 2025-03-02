@@ -1,63 +1,93 @@
 import java.io.*;
 import java.util.*;
 
+// LCA 알고리즘
 public class Main {
+    static int N, M, LOG;
+    static ArrayList<Edge>[] graph;
+    static int[][] parent;
+    static int[] depth, dist;
 
-    static int n, m;
-    // 인접리스트에 이웃 노드만 저장하고, 간선 가중치는 전역 dist[][]에 저장 (직접 연결된 경우)
-    static int dist[][] = new int[1002][1002];
-    static ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+    static class Edge {
+        int to, weight;
+        public Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
 
-    public static int bfs(int start, int target) {
-        Queue<Integer> queue = new ArrayDeque<>();
-        boolean[] visited = new boolean[n + 1];
-        int[] d = new int[n + 1];
-        
-        queue.offer(start);
-        visited[start] = true;
-        
-        while (!queue.isEmpty()) {
-            int cur = queue.poll();
-            if (cur == target) return d[cur];
-            for (int nxt : adj.get(cur)) {
-                if (visited[nxt]) continue;
-                d[nxt] = d[cur] + dist[cur][nxt];
-                visited[nxt] = true;
-                queue.offer(nxt);
+    static void dfs(int cur, int par) {
+        parent[cur][0] = par;
+        for (Edge e : graph[cur]) {
+            if (e.to == par) continue;
+            depth[e.to] = depth[cur] + 1;
+            dist[e.to] = dist[cur] + e.weight;
+            dfs(e.to, cur);
+        }
+    }
+
+    // 두 노드의 최소 공통 조상(LCA)을 찾는 함수 (binary lifting 이용)
+    static int lca(int u, int v) {
+        if (depth[u] < depth[v]) {
+            int temp = u;
+            u = v;
+            v = temp;
+        }
+        for (int i = LOG - 1; i >= 0; i--) {
+            if (depth[u] - (1 << i) >= depth[v])
+                u = parent[u][i];
+        }
+        if (u == v) return u;
+        for (int i = LOG - 1; i >= 0; i--) {
+            if (parent[u][i] != parent[v][i]) {
+                u = parent[u][i];
+                v = parent[v][i];
             }
         }
-        return -1;
+        return parent[u][0];
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        StringBuilder sb = new StringBuilder();
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-        
-        for (int i = 0; i <= n; i++) {
-            adj.add(new ArrayList<>());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        graph = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            graph[i] = new ArrayList<>();
         }
-        
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 1; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             int u = Integer.parseInt(st.nextToken());
             int v = Integer.parseInt(st.nextToken());
             int w = Integer.parseInt(st.nextToken());
-            // 양방향 그래프
-            adj.get(u).add(v);
-            adj.get(v).add(u);
-            dist[u][v] = w;
-            dist[v][u] = w;
+            graph[u].add(new Edge(v, w));
+            graph[v].add(new Edge(u, w));
         }
-        
-        for (int i = 0; i < m; i++) {
+
+        LOG = 0;
+        while ((1 << LOG) <= N) LOG++;
+        parent = new int[N + 1][LOG];
+        depth = new int[N + 1];
+        dist = new int[N + 1];
+
+        dfs(1, 0);
+
+        for (int k = 1; k < LOG; k++) {
+            for (int i = 1; i <= N; i++) {
+                parent[i][k] = parent[parent[i][k - 1]][k - 1];
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int u = Integer.parseInt(st.nextToken());
             int v = Integer.parseInt(st.nextToken());
-            int ans = bfs(u, v);
-            sb.append(ans).append('\n');
+            int lca = lca(u, v);
+            int answer = dist[u] + dist[v] - 2 * dist[lca];
+            sb.append(answer).append("\n");
         }
         System.out.print(sb);
     }
