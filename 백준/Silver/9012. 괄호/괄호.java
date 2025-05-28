@@ -1,40 +1,30 @@
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Stack;
+import java.io.*;
+import java.util.*;
 
 public class Main {
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        String temp1;
-        Boolean status;
-        Stack<String> bracket;
         int t = Integer.parseInt(br.readLine());
-        for (int i = 0; i < t; i++) {
-            bracket = new Stack<>();
-            temp1 = br.readLine();
-            status = true;
-            for (int j = 0; j < temp1.length(); j++) {
-                if (temp1.charAt(j) == '(') {
-                    bracket.push("(");
+        StringBuilder sb = new StringBuilder();
+
+        while (t-- > 0) {
+            Deque<Character> stack = new ArrayDeque<>();
+            String input = br.readLine();
+            boolean fail = false;
+            for (int i = 0; i < input.length(); i++) {
+                if (input.charAt(i) == '(') {
+                    stack.push('(');
+                    continue;
                 }
-                else {
-                    if (bracket.empty()) {
-                        status = false;
-                        break;
-                    }
-                    else {
-                        bracket.pop();
-                    }
+                if (stack.isEmpty() || stack.peek() != '(') {
+                    fail = true;
+                    break;
                 }
+                stack.pop();
             }
-            if (bracket.empty() && status == true) {
-                sb.append("YES").append("\n");
-            }
-            else {
-                sb.append("NO").append("\n");
-            }
+            if (!stack.isEmpty()) fail = true;
+            sb.append(fail ? "NO" : "YES").append('\n');
         }
         System.out.print(sb);
     }
