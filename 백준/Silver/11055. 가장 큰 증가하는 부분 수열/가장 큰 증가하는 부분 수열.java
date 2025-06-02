@@ -25,6 +25,6 @@ public class Main {
             }
             dp[i] = localMax + arr[i];
         }
-        System.out.print(Arrays.stream(dp, 0, n).parallel().max().getAsInt());
+        System.out.print(Arrays.stream(dp, 0, n).max().getAsInt());
     }
 }
