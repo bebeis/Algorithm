@@ -1,13 +1,12 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.*;
 
 public class Main {
-
     static int n;
     static int m;
-    static Node[] nodes = new Node[1000002]; // 고유 번호 I 노드
     static int[] ids = new int[500002];
+    static int[] prev = new int[1000002];
+    static int[] next = new int[1000002];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -21,14 +20,12 @@ public class Main {
             ids[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.setAll(nodes, i -> new Node());
-
         for (int i = 0; i < n; i++) {
             int curId = ids[i];
-            int prevId = ids[Math.floorMod((i - 1), n)];
-            int nextId = ids[Math.floorMod((i + 1), n)];
-            nodes[curId].prevId = prevId;
-            nodes[curId].nextId = nextId;
+            int prevId = ids[(i - 1 + n) % n];
+            int nextId = ids[(i + 1) % n];
+            prev[curId] = prevId;
+            next[curId] = nextId;
         }
 
         while (m-- > 0) {
@@ -37,53 +34,38 @@ public class Main {
             if (command.equals("BN")) {
                 int i = Integer.parseInt(st.nextToken());
                 int j = Integer.parseInt(st.nextToken());
-                int nextNodeId = nodes[i].nextId;
+                int nextNodeId = next[i];
                 sb.append(nextNodeId).append('\n');
-                nodes[j].prevId = i;
-                nodes[j].nextId = nextNodeId;
-
-                nodes[i].nextId = j;
-                nodes[nextNodeId].prevId = j;
+                prev[j] = i;
+                next[j] = nextNodeId;
+                next[i] = j;
+                prev[nextNodeId] = j;
             } else if (command.equals("BP")) {
                 int i = Integer.parseInt(st.nextToken());
                 int j = Integer.parseInt(st.nextToken());
-                int prevNodeId = nodes[i].prevId;
+                int prevNodeId = prev[i];
                 sb.append(prevNodeId).append('\n');
-                nodes[j].prevId = prevNodeId;
-                nodes[j].nextId = i;
-
-                nodes[prevNodeId].nextId = j;
-                nodes[i].prevId = j;
+                prev[j] = prevNodeId;
+                next[j] = i;
+                next[prevNodeId] = j;
+                prev[i] = j;
             } else if (command.equals("CN")) {
                 int i = Integer.parseInt(st.nextToken());
-                int closedNodeId = nodes[i].nextId;
+                int closedNodeId = next[i];
                 sb.append(closedNodeId).append('\n');
-                int nextNodeId = nodes[closedNodeId].nextId;
-
-                nodes[i].nextId = nextNodeId;
-                nodes[nextNodeId].prevId = i;
+                int nextNodeId = next[closedNodeId];
+                next[i] = nextNodeId;
+                prev[nextNodeId] = i;
             } else {
                 int i = Integer.parseInt(st.nextToken());
-                int closedNodeId = nodes[i].prevId;
+                int closedNodeId = prev[i];
                 sb.append(closedNodeId).append('\n');
-                int prevNodeId = nodes[closedNodeId].prevId;
-
-                nodes[prevNodeId].nextId = i;
-                nodes[i].prevId = prevNodeId;
+                int prevNodeId = prev[closedNodeId];
+                next[prevNodeId] = i;
+                prev[i] = prevNodeId;
             }
         }
+
         System.out.print(sb);
-    }
-
-    static class Node {
-        int prevId;
-        int nextId;
-
-        public Node() {}
-
-        public Node(int prev, int next) {
-            this.prevId = prev;
-            this.nextId = next;
-        }
     }
 }
