@@ -4,14 +4,11 @@ import java.util.*;
 public class Main {
 
     static int[][] board = new int[1002][1002];
-    static int[][][] dist = new int[1002][1002][12];
-    static final int INF = 0x3f3f3f3f;
-    static int[] dx = {1, 0, -1, 0};
-    static int[] dy = {0, 1, 0, -1};
+    static boolean[][][] seen;
+    static final int[] dx = {1, 0, -1, 0};
+    static final int[] dy = {0, 1, 0, -1};
 
-    static int n;
-    static int m;
-    static int k;
+    static int n, m, k;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -27,47 +24,38 @@ public class Main {
             }
         }
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                Arrays.fill(dist[i][j], 0, k + 1, INF);
-            }
-        }
-
+        seen = new boolean[n][m][k + 1];
         Queue<int[]> queue = new ArrayDeque<>();
-        queue.offer(new int[]{0, 0, 0});
-        dist[0][0][0] = 1;
+        queue.add(new int[]{0, 0, 0});
+        seen[0][0][0] = true;
 
+        int steps = 1;
         while (!queue.isEmpty()) {
-            var cur = queue.poll();
-            int cx = cur[0];
-            int cy = cur[1];
-            int cb = cur[2];
+            int sz = queue.size();
+            while (sz-- > 0) {
+                int[] cur = queue.poll();
+                int cx = cur[0], cy = cur[1], cb = cur[2];
 
-            for (int i = 0; i < 4; i++) {
-                int nx = cx + dx[i];
-                int ny = cy + dy[i];
-                if (isOutBoundary(nx, ny)) continue;
-                if (isNextWall(nx, ny)) {
-                    if (overBreakLimit(cb)) continue;
-                    if (dist[cx][cy][cb] + 1 < dist[nx][ny][cb + 1]) {
-                        dist[nx][ny][cb + 1] = dist[cx][cy][cb] + 1;
-                        queue.offer(new int[]{nx, ny, cb + 1});
-                    }
-                } else {
-                    if (dist[cx][cy][cb] + 1 < dist[nx][ny][cb]) {
-                        dist[nx][ny][cb] = dist[cx][cy][cb] + 1;
-                        queue.offer(new int[]{nx, ny, cb});
+                if (cx == n - 1 && cy == m - 1) {
+                    System.out.print(steps);
+                    return;
+                }
+
+                for (int d = 0; d < 4; d++) {
+                    int nx = cx + dx[d], ny = cy + dy[d];
+                    if (isOutBoundary(nx, ny)) continue;
+
+                    int nb = cb + (isNextWall(nx, ny) ? 1 : 0);
+                    if (nb <= k && !seen[nx][ny][nb]) {
+                        seen[nx][ny][nb] = true;
+                        queue.add(new int[]{nx, ny, nb});
                     }
                 }
             }
+            steps++;
         }
 
-        int minDist = INF;
-        for (int i = 0; i <= k; i++) {
-            minDist = Math.min(minDist, dist[n - 1][m - 1][i]);
-        }
-
-        System.out.print(minDist == INF ? -1 : minDist);
+        System.out.print(-1);
     }
 
     public static boolean isNextWall(int x, int y) {
@@ -76,9 +64,5 @@ public class Main {
 
     public static boolean isOutBoundary(int x, int y) {
         return x < 0 || x >= n || y < 0 || y >= m;
-    }
-
-    public static boolean overBreakLimit(int b) {
-        return b >= k;
     }
 }
