@@ -1,14 +1,11 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.*;
 
 public class Main {
 
-    static int v;
-    static int e;
-    static int k;
-    static List<ArrayList<Pair>> adj = new ArrayList<>();
-    static int[] d = new int[20005];
+    static int v, e, k;
+    static int d[] = new int[20002];
+    static ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
     static final int INF = 0x3f3f3f3f;
 
     public static void main(String[] args) throws IOException {
@@ -18,10 +15,11 @@ public class Main {
         e = Integer.parseInt(st.nextToken());
         k = Integer.parseInt(br.readLine());
         for (int i = 0; i <= v; i++) {
-            adj.add(new ArrayList<>());
             d[i] = INF;
+            adj.add(new ArrayList<>());
         }
-        while (e-- > 0) {
+
+        while (e-- > 0 ) {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
@@ -29,34 +27,41 @@ public class Main {
             adj.get(a).add(new Pair(c, b));
         }
 
-        PriorityQueue<Pair> pq = new PriorityQueue<>((p1, p2) -> p1.cost - p2.cost);
         d[k] = 0;
-        pq.offer(new Pair(d[k], k));
-
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        pq.add(new Pair(d[k], k));
         while (!pq.isEmpty()) {
-            var last = pq.poll();
-            if (d[last.end] != last.cost) continue;
-
-            for (var nxt : adj.get(last.end)) {
-                if (d[nxt.end] > last.cost + nxt.cost) {
-                    d[nxt.end] = last.cost + nxt.cost;
-                    pq.offer(new Pair(d[nxt.end], nxt.end));
-                }
+            var cur = pq.poll();
+            if (d[cur.ed] != cur.cost) continue;
+            for (var nxt : adj.get(cur.ed)) {
+                if (d[nxt.ed] <= d[cur.ed] + nxt.cost) continue;
+                d[nxt.ed] = d[cur.ed] + nxt.cost;
+                pq.add(new Pair(d[nxt.ed], nxt.ed));
             }
         }
 
-        String result = IntStream.rangeClosed(1, v)
-                .mapToObj(i -> (d[i] == INF ? "INF" : String.valueOf(d[i])))
-                .collect(Collectors.joining("\n"));
-        System.out.print(result);
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 1; i <= v; i++) {
+            if (d[i] == INF) sb.append("INF\n");
+            else sb.append(d[i]).append('\n');
+        }
+
+        System.out.print(sb);
     }
 
-    static class Pair {
+    static class Pair implements Comparable<Pair> {
         int cost;
-        int end;
-        public Pair(int aa, int bb) {
-            cost = aa;
-            end = bb;
+        int ed;
+
+        public Pair(int cost, int ed) {
+            this.cost = cost;
+            this.ed = ed;
+        }
+
+        @Override
+        public int compareTo(Pair p) {
+            return this.cost < p.cost ? -1 : (this.cost == p.cost ? 0 : 1);
         }
     }
 }
