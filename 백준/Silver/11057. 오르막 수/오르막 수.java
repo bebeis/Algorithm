@@ -10,25 +10,20 @@ import java.util.*;
 public class Main {
 
     static int n;
-    static int[][] d = new int[1002][10];
+    static int[][] d = new int[1010][10];
     final static int MOD = 10007;
 
     public static void main(String[] args) throws IOException {
         n = Integer.parseInt(new BufferedReader(new InputStreamReader(System.in)).readLine());
-        Arrays.fill(d[1], 0, 10, 1);
-        for (int i = 2; i <= n; i++) {
-            for (int j = 0; j <= 9; j++) {
-                if (j == 0) {
-                    d[i][j] = d[i - 1][j];
-                    continue;
-                }
-                for (int k = 0; k <= j; k++) {
-                    d[i][j] = (d[i][j] + d[i - 1][k]) % MOD;
-                }
-            }
+        
+        for (int i = 1; i <= 9; i++) d[i][i] = 1;
+
+        for (int i = 1; i <= n + 9; i++) {
+            d[i][0] = 1;
+            for (int j = 1; j < Math.min(i, 10); j++)
+            d[i][j] = (d[i - 1][j - 1] + d[i - 1][j]) % MOD;
         }
 
-         System.out.print(Arrays.stream(d[n], 0, 10)
-                           .reduce(0, (sum, val) -> (sum + val) % MOD));
+        System.out.print(d[n + 9][9]);
     }
 }
