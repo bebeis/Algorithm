@@ -1,24 +1,26 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.*;
+
+/*
+ * x[i] 이하에 몇 개의 원소가 있는지로 converting
+ * 정렬한 다음 해당 upper_bound 위치로 구할 수 있을 듯
+ */
 
 public class Main {
+
+    static int[] x = new int[1000002];
+    static int[] sorted;
+    static int[] c = new int[1000002];
     static int n;
-    static int[] arr = new int[1000002];
-    static int[] tmp = new int[1000002];
 
-    // 1, 2, 3, 3, 3, 3 4, 5
-    // F F T T T T T T
-    // F F F F F F T T
-
-    public static int compress(int target) {
-        int st = -1, ed = tmp.length;
-        while (st + 1 < ed) {
-            int mid = (st + ed) / 2;
-            if (tmp[mid] >= target) ed = mid;
-            else st = mid;
+    public static int lowerBound(int target) {
+        int lo = -1, high = sorted.length;
+        while (lo + 1 < high) {
+            int mid = (lo + high) / 2;
+            if (sorted[mid] < target) lo = mid;
+            else high = mid;
         }
-        return ed;
+        return high;
     }
 
     public static void main(String[] args) throws IOException {
@@ -26,14 +28,15 @@ public class Main {
         n = Integer.parseInt(br.readLine());
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
-            tmp[i] = arr[i] = Integer.parseInt(st.nextToken());
+            x[i] = Integer.parseInt(st.nextToken());
         }
-        Arrays.sort(tmp, 0, n);
-        tmp = Arrays.stream(tmp, 0, n).distinct().toArray();
+
+        sorted = Arrays.stream(x, 0, n).sorted().distinct().toArray();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            sb.append(compress(arr[i])).append(' ');
-        }
+        Arrays.stream(x, 0, n)
+            .map(Main::lowerBound)
+            .forEach(p -> sb.append(p).append(' '));
+        
         System.out.print(sb);
     }
 }
