@@ -15,22 +15,12 @@ public class Main {
                 String[] parts = br.readLine().split(" ");
                 if (parts[0].equals("I")) {
                     int val = Integer.parseInt(parts[1]);
-                    int cur = tree.getOrDefault(val, 0);
-                    tree.put(val, cur + 1);
-                } else if (tree.isEmpty()) {
-                    continue;
-                } else {
-                    int key = 0;
+                    tree.merge(val, 1, Integer::sum);
+                } else if (!tree.isEmpty()) {
                     if (parts[1].equals("-1")) {
-                        key = tree.firstKey();
+                        tree.compute(tree.firstKey(), (k1, v) -> (v == 1) ? null : v - 1);
                     } else {
-                        key = tree.lastKey();
-                    }
-                    int val = tree.get(key);
-                    if (val == 1) {
-                        tree.remove(key);
-                    } else {
-                        tree.put(key, val - 1);
+                        tree.compute(tree.lastKey(), (k1, v) -> (v == 1) ? null : v - 1);
                     }
                 }
             }
@@ -40,6 +30,7 @@ public class Main {
                 sb.append(tree.lastKey()).append(' ').append(tree.firstKey()).append('\n');
             }
         }
+        
         System.out.print(sb);
     }
 }
