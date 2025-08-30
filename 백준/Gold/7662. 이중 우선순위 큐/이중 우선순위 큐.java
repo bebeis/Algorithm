@@ -1,67 +1,45 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine());
-
-        for (int tc = 1; tc <= T; tc++) {
+        int t = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        while (t-- > 0) {
+            TreeMap<Integer, Integer> tree = new TreeMap<>();
             int k = Integer.parseInt(br.readLine());
-            Map<Integer, Integer> map = new HashMap<>();
-            PriorityQueue<Integer> minQue = new PriorityQueue<>();
-            PriorityQueue<Integer> maxQue = new PriorityQueue<>(Collections.reverseOrder());
 
-            for (int i = 0; i < k; i++) {
-                String[] input = br.readLine().split(" ");
-                char ch = input[0].charAt(0);
-                int n = Integer.parseInt(input[1]);
-
-                if (ch == 'I') {
-                    map.put(n, map.getOrDefault(n, 0) + 1);
-
-                    minQue.add(n);
-                    maxQue.add(n);
+            while (k-- > 0) {
+                String[] parts = br.readLine().split(" ");
+                if (parts[0].equals("I")) {
+                    int val = Integer.parseInt(parts[1]);
+                    int cur = tree.getOrDefault(val, 0);
+                    tree.put(val, cur + 1);
+                } else if (tree.isEmpty()) {
+                    continue;
                 } else {
-                    if (map.size() == 0)
-                        continue;
-
-                    PriorityQueue<Integer> que = n == 1 ? maxQue : minQue;
-                    removeMap(que, map);
+                    int key = 0;
+                    if (parts[1].equals("-1")) {
+                        key = tree.firstKey();
+                    } else {
+                        key = tree.lastKey();
+                    }
+                    int val = tree.get(key);
+                    if (val == 1) {
+                        tree.remove(key);
+                    } else {
+                        tree.put(key, val - 1);
+                    }
                 }
             }
-
-            if (map.size() == 0)
-                System.out.println("EMPTY");
-            else {
-                int n = removeMap(maxQue, map);
-                System.out.println(n + " " + (map.size() > 0 ? removeMap(minQue, map) : n));
+            if (tree.isEmpty()) {
+                sb.append("EMPTY\n");
+            } else {
+                sb.append(tree.lastKey()).append(' ').append(tree.firstKey()).append('\n');
             }
-
         }
-
+        System.out.print(sb);
     }
-
-    static int removeMap(PriorityQueue<Integer> que, Map<Integer, Integer> map) {
-        int num;
-        while (true) {
-            num = que.poll();
-            int cnt = map.getOrDefault(num, 0);
-
-            if (cnt == 0)
-                continue;
-
-            if (cnt == 1)
-                map.remove(num);
-            else
-                map.put(num, cnt - 1);
-
-            break;
-        }
-
-        return num;
-    }
-
 }
