@@ -1,79 +1,80 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+/**
+ * 방법 1. 우물 직접 파기
+ * 방법 2. 물 끌어오기
+ * 각각의 논에서 직접 파는 비용, 끌어오는 비용이 주어짐
+ * 최소 비용으로 모든 논에 물을 대자
+ */
 
-    static int n;
-    static int p[] = new int[302];
-    static List<Edge> edges = new ArrayList<>();
+/**
+ * 아이디어: 우물에서 직접 파는 것을 새로운 논에서 물을 대는 것으로 치환한다.
+ * 논은 N + 1개가 되고, N + 1번 논은 우물을 직접 파는 것과 대응됨. 이 우물은 반드시 다른 우물과 연결되므로 조건 만족
+ * 이렇게 되면 최소 신장 트리 문제로 치환됨
+ */
+
+public class Main {
 
     public static int find(int x) {
         if (p[x] < 0) return x;
         return p[x] = find(p[x]);
     }
-    
-    public static boolean isDiffGroup(int u, int v) {
-        u = find(u);
-        v = find(v);
 
-        if (u == v) return false;
-        if (p[u] == p[v]) p[u]--;
-        if (p[u] < p[v]) p[v] = u;
-        else p[u] = v;
+    public static boolean union(int x, int y) {
+        x = find(x);
+        y = find(y);
+
+        if (x == y) return false;
+        p[x] = y;
         return true;
     }
-        // 최소 1곳은 우물을 파야한다.
-        // -> n + 1번째에 1~n 중 최소 하나는 연결되어야 한다.
 
+
+    static int[] p = new int[302];
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-        n = Integer.parseInt(br.readLine());
+        int n = Integer.parseInt(br.readLine());
+        for (int i = 1; i <= n + 1; i++) p[i] = -1;
+
+        List<Edge> edges = new ArrayList<>();
         for (int i = 1; i <= n; i++) {
-            edges.add(new Edge(i, n + 1, Integer.parseInt(br.readLine())));
-            p[i] = -1;
+            int weight = Integer.parseInt(br.readLine());
+            edges.add(new Edge(n + 1, i, weight));
         }
-        p[n + 1] = -1;
 
         for (int i = 1; i <= n; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 1; j <= n; j++) {
-                int temp = Integer.parseInt(st.nextToken());
-                if (i >= j) continue;
-                edges.add(new Edge(i, j, temp));
+            String[] weights = br.readLine().split(" ");
+            for (int j = 1; j <= i - 1; j++) {
+                int weight = Integer.parseInt(weights[j - 1]);
+                edges.add(new Edge(i, j, weight));
             }
         }
 
-        Collections.sort(edges);
-        n++;
-
+        Collections.sort(edges, (e1, e2) -> e1.w - e2.w);
+        int result = 0;
         int cnt = 0;
-        int ans = 0;
         for (Edge edge : edges) {
-            if (!isDiffGroup(edge.start, edge.end)) continue;
-            ans += edge.cost;
-            cnt++;
-            if (cnt == n - 1) break;
-        }
+            if (union(edge.s, edge.e)) {
+                result += edge.w;
+                cnt++;
+            }
 
-        System.out.println(ans);
+            if (cnt == n) break;
+        }
+        System.out.print(result);
     }
 
-    static class Edge implements Comparable<Edge> {
-        int cost;
-        int start;
-        int end;
+    static class Edge {
+        int s;
+        int e;
+        int w;
 
-        public Edge(int s, int e, int c) {
-            cost = c;
-            start = s;
-            end = e;
+        public Edge(int s, int e, int w) {
+            this.s = s;
+            this.e = e;
+            this.w = w;
         }
-
-        @Override
-        public int compareTo(Edge e) {
-            return this.cost < e.cost ? -1 : (this.cost == e.cost ? 0 : 1);
-        }
-
     }
 }
