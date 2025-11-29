@@ -1,57 +1,51 @@
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
-import java.util.function.Consumer;
+import java.io.*;
+import java.util.function.*;
 
-public class Main {
+class Main {
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         String input = br.readLine();
-        LinkedList<Character> list = new LinkedList<>();
-        for (char c : input.toCharArray()) list.add(c);
 
-        ListIterator<Character> cursor = list.listIterator(list.size());
+        List<Character> chars = new LinkedList<>();
+        for (int i = 0; i < input.length(); i++) {
+            chars.add(input.charAt(i));
+        }
 
-        Map<String, Runnable> noArgCommands = new HashMap<>();
-        Map<String, Consumer<Character>> charCommands = new HashMap<>();
-
-        charCommands.put("P", cursor::add);
-
-        noArgCommands.put("L", () -> {
-            if (cursor.hasPrevious()) cursor.previous();
-        });
-
-        noArgCommands.put("D", () -> {
-            if (cursor.hasNext()) cursor.next();
-        });
-
-        noArgCommands.put("B", () -> {
-            if (cursor.hasPrevious()) {
-                cursor.previous();
-                cursor.remove();
+        ListIterator<Character> it = chars.listIterator(input.length());
+        Map<Character, Consumer<Character>> commandMap = new HashMap<>();
+        commandMap.put('L', c -> {
+            if (it.hasPrevious()) {
+                it.previous();
             }
         });
 
-        int n = Integer.parseInt(br.readLine());
-
-        while (n-- > 0) {
-            String cmd = br.readLine();
-
-            char type = cmd.charAt(0);
-
-            if (type == 'P') {
-                char x = cmd.charAt(2);
-                charCommands.get("P").accept(x);
-            } else {
-                noArgCommands.get(String.valueOf(type)).run();
+        commandMap.put('D', c -> {
+            if (it.hasNext()) {
+                it.next();
             }
+        });
+
+        commandMap.put('B', c -> {
+            if (it.hasPrevious()) {
+                it.previous();
+                it.remove();
+            }
+        });
+
+        commandMap.put('P', c -> {
+            it.add(c);
+        });
+
+        int m = Integer.parseInt(br.readLine());
+        while (m-- > 0) {
+            String line = br.readLine();
+            commandMap.get(line.charAt(0)).accept(line.charAt(0) == 'P' ? line.charAt(2) : ' ');
         }
 
         StringBuilder sb = new StringBuilder();
-        list.forEach(sb::append);
+        chars.forEach(sb::append);
         System.out.print(sb);
     }
 }
