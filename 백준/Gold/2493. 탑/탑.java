@@ -1,36 +1,50 @@
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
-public class Main {
-    
-    public static void main(String[] args) throws IOException{
+class Main {
+
+    static int[] arr = new int[500002];
+    static int[] result = new int[500002];
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
         int n = Integer.parseInt(br.readLine());
+
         StringTokenizer st = new StringTokenizer(br.readLine());
-        Deque<Pair> stack = new ArrayDeque<Pair>();
-        stack.push(new Pair(100000001, 0));
         for (int i = 1; i <= n; i++) {
-            int input =  Integer.parseInt(st.nextToken());
-
-            while (stack.peek().x < input) {
-                stack.pop();
-            }
-
-            sb.append(stack.peek().y).append(' ');
-            stack.push(new Pair(input, i));
+            arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        System.out.println(sb);
+        Deque<Pair> stack = new ArrayDeque<>();
+        for (int i = n; i >= 1; i--) {
+            if (stack.isEmpty()) {
+                stack.push(new Pair(arr[i], i));
+                continue;
+            }
+
+            while (!stack.isEmpty() && stack.peek().val <= arr[i]) {
+                Pair top = stack.pop();
+                result[top.idx] = i;
+            }
+            stack.push(new Pair(arr[i], i));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= n; i++) {
+            sb.append(result[i]).append(' ');
+        }
+        System.out.print(sb);
     }
 
-    public static class Pair {
-        public int x;
-        public int y;
+    // 자바 15에도 record는 못쓰네..
+    static class Pair {
+        final int val;
+        final int idx;
 
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
+        Pair(int val, int idx) {
+            this.val = val;
+            this.idx = idx;
         }
     }
 }
