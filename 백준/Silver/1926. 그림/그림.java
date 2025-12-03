@@ -1,71 +1,69 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-public class Main {
+/**
+ * 문제: 격좌에서 영역의 수/넓이 구하기
+ */
 
+class Main {
+
+    static int[][] board = new int[502][502];
+    static boolean[][] visited = new boolean[502][502];
+    static int[] dx = { 1, 0, -1, 0 };
+    static int[] dy = { 0, 1, 0, -1 };
     static int n;
     static int m;
-    static int[][] arr = new int[502][502];
-    static boolean[][] visited = new boolean[502][502];
-    static int[] dx = {1, 0, -1, 0};
-    static int[] dy = {0, 1, 0, -1};
-    static int cnt = 0;
-    static int maxArea = 0;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
         for (int i = 0; i < n; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < m; j++) {
-                arr[i][j] = Integer.parseInt(st.nextToken());
+                board[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
+        int maxArea = 0;
+        int cnt = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                if (arr[i][j] == 0 || visited[i][j]) continue;
-
-                Queue<Pair> queue = new ArrayDeque<>();
-                int area = 1;
-                queue.offer(new Pair(i, j));
-                visited[i][j] = true;
+                if (visited[i][j] || board[i][j] == 0) continue;
                 cnt++;
-                
-                while (!queue.isEmpty()) {
-                    var cur = queue.poll();
-
-                    for (int k = 0; k < 4; k++) {
-                        int nx = cur.x + dx[k];
-                        int ny = cur.y + dy[k];
-
-                        if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-                        if (arr[nx][ny] == 0 || visited[nx][ny]) continue;
-                        visited[nx][ny] = true;
-                        queue.offer(new Pair(nx, ny));
-                        area++;
-                    }
-                }
-
+                int area = bfs(i, j);
                 maxArea = Math.max(maxArea, area);
             }
         }
-
         System.out.println(cnt);
-        System.out.print(maxArea);
+        System.out.println(maxArea);
     }
 
-    static class Pair {
-        int x;
-        int y;
-        
-        public Pair(int xx, int yy) {
-            x = xx;
-            y = yy;
+    public static int bfs(int sx, int sy) {
+        int cnt = 0;
+        Queue<int[]> queue = new ArrayDeque<>();
+        queue.offer(new int[]{sx, sy});
+        visited[sx][sy] = true;
+
+        while (!queue.isEmpty()) {
+            var cur = queue.poll();
+            int cx = cur[0];
+            int cy = cur[1];
+            cnt++;
+
+            for (int i = 0; i < 4; i++) {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                if (visited[nx][ny] || board[nx][ny] == 0) continue;
+                queue.offer(new int[]{nx, ny});
+                visited[nx][ny] = true;
+            }
         }
+
+        return cnt;
     }
 }
