@@ -1,15 +1,18 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Main {
+/**
+ * 문제: 수열에서 연속된 수의 부분합이 S이상이 되는 것 중 가장 짧은 것의 길이 구하기
+ * - 모든 쌍을 브루트포스로 풀면 시간 초과 O(nlogn) 이하로 풀이해야 함
+ * - 연속된 수 -> 정렬은 불가능하지만, "구간"을 다룰 수 있음
+ * - 이전 구간의 정보를 다음 구간에 재활용할 수 있다는 점 -> 슬라이딩 윈도우로 해결
+ */
+class Main {
 
     static int n;
     static int s;
-    static int arr[] = new int[100002];
-    static int sum[] = new int[100002];
-    static int answer = Integer.MAX_VALUE;
+    final static int INF = 100002;
+    static int[] arr = new int[INF];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -17,33 +20,33 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         s = Integer.parseInt(st.nextToken());
         st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= n; i++) {
+
+        for (int i = 0; i < n; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        sum[1] = arr[1];
-        for (int i = 1; i <= n; i++) {
-            sum[i] = sum[i - 1] + arr[i];
-        }
+        System.out.print(solve());
+    }
 
-        int start = 1, end = 1;
-        while (start <= n && end <= n) {
-            int temp;
-            if (start == end) temp = arr[start];
-            else temp = sum[start] - sum[end - 1];
-            
-
-            if (temp >= s) {
-                answer = Math.min(answer, start - end + 1);
-                if (start > end) end++;
-                else start++;
-                continue;
+    public static int solve() {
+        int minLength = 100002;
+        int head = 0, tail = 0;
+        int sum = arr[0];
+        while (head < n && tail < n) {
+            if (head == tail && sum >= s) {
+                return 1;
             }
 
-            start++;
+            if (sum >= s) {
+                minLength = Math.min(minLength, head - tail + 1);
+                sum -= arr[tail++];
+            } else {
+                head++;
+                if (head < n) {
+                    sum += arr[head];
+                }
+            }
         }
-
-        if (answer == Integer.MAX_VALUE) answer = 0;
-        System.out.print(answer);
+        return minLength == INF ? 0 : minLength;
     }
 }
