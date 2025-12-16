@@ -3,34 +3,44 @@ import java.util.*;
 import java.util.function.*;
 
 public class Main {
+
+    static int n;
+    static int k;
+    static int[] d = new int[100002];
+    static IntUnaryOperator[] funcs = {
+            (int x) -> x - 1, 
+            (int x) -> x + 1,
+            (int x) -> x * 2
+        };
     
-    static int n, k;
-    static int[] dist = new int[100002];
-    static List<Function<Integer, Integer>> functions = List.of(x -> x - 1, x -> x + 1, x -> 2 * x);
-
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] strings = br.readLine().split(" ");
-        n = Integer.parseInt(strings[0]);
-        k = Integer.parseInt(strings[1]);
+        String[] parts = new BufferedReader(new InputStreamReader(System.in)).readLine().split(" ");
+        n = Integer.parseInt(parts[0]);
+        k = Integer.parseInt(parts[1]);
+        Arrays.fill(d, 0, 100001, -1);
 
+        System.out.print(solve());
+    }
+
+    private static int solve() {
+        if (n == k) return 0;
         Queue<Integer> queue = new ArrayDeque<>();
         queue.offer(n);
+        d[n] = 0;
 
         while (!queue.isEmpty()) {
-            int cur = queue.poll();
-            if (cur == k) {
-                System.out.print(dist[cur]);
-                return;
-            }
+            var cur = queue.poll();
 
-            for (var function : functions) {
-                int next = function.apply(cur);
-                if (next < 0 || next > 100000) continue;
-                if (dist[next] != 0) continue;
-                dist[next] = dist[cur] + 1;
-                queue.offer(next);
+            for (int i = 0; i < 3; i++) {
+                int nxt = funcs[i].applyAsInt(cur);
+                if (nxt < 0 || nxt > 100000) continue;
+                if (d[nxt] != -1) continue;
+                if (nxt == k) return d[cur] + 1;
+                queue.offer(nxt);
+                d[nxt] = d[cur] + 1;
             }
         }
+
+        return -1;
     }
 }
