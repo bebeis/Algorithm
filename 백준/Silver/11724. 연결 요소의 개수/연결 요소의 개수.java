@@ -1,44 +1,53 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+class Main {
 
     static int n;
     static int m;
-    static List<ArrayList<Integer>> adj = new ArrayList<>();
     static boolean[] visited = new boolean[1002];
-
-    public static void dfs(int cur) {
-        visited[cur] = true;
-
-        for (int nxt : adj.get(cur)) {
-            if (visited[nxt]) continue;
-            dfs(nxt);
-        }
-    }
+    static List<List<Integer>> graph = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
+        String[] parts = br.readLine().split(" ");
+        n = Integer.parseInt(parts[0]);
+        m = Integer.parseInt(parts[1]);
         for (int i = 0; i <= n; i++) {
-            adj.add(new ArrayList<>());
+            graph.add(new ArrayList<>());
         }
 
         while (m-- > 0) {
-            st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
-            adj.get(u).add(v);
-            adj.get(v).add(u);
+            parts = br.readLine().split(" ");
+            int u = Integer.parseInt(parts[0]);
+            int v = Integer.parseInt(parts[1]);
+            graph.get(u).add(v);
+            graph.get(v).add(u);
         }
+
         int cnt = 0;
         for (int i = 1; i <= n; i++) {
             if (visited[i]) continue;
-            dfs(i);
+            bfs(i);
             cnt++;
         }
+
         System.out.print(cnt);
+    }
+
+    private static void bfs(int start) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        queue.offer(start);
+        visited[start] = true;
+
+        while (!queue.isEmpty()) {
+            var cur = queue.poll();
+
+            for (int nxt : graph.get(cur)) {
+                if (visited[nxt]) continue;
+                queue.offer(nxt);
+                visited[nxt] = true;
+            }
+        }
     }
 }
