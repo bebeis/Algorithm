@@ -1,49 +1,18 @@
-package P1406
+import java.util.*
+fun main() = with(System.`in`.bufferedReader()) {
+    val leftList = LinkedList(readLine().toList())
+    val rightList = LinkedList<Char>()
 
-import java.util.LinkedList
-
-fun main() {
-    val input = readlnOrNull()
-    val list = LinkedList<Char>()
-    input?.forEach { list.add(it) }
-
-    val cursor = list.listIterator(list.size)
-
-    val noArgCommands = mutableMapOf<String, () -> Unit>()
-    val charCommands = mutableMapOf<String, (Char) -> Unit>()
-
-    charCommands["P"] = { ch -> cursor.add(ch) }
-
-    noArgCommands["L"] = {
-        if (cursor.hasPrevious()) cursor.previous()
-    }
-
-    noArgCommands["D"] = {
-        if (cursor.hasNext()) cursor.next()
-    }
-
-    noArgCommands["B"] = {
-        if (cursor.hasPrevious()) {
-            cursor.previous()
-            cursor.remove()
+    repeat(readLine().toInt()) {
+        readLine().run {
+            when (this[0]) {
+                'P' -> leftList.addLast(this[2])
+                'L' -> leftList.removeLastOrNull() ?.let { rightList.addFirst(it) }
+                'D' -> rightList.removeFirstOrNull() ?.let { leftList.addLast(it) }
+                'B' -> leftList.removeLastOrNull()
+            }
         }
     }
 
-    val n = readlnOrNull()?.toInt() ?: 0
-
-    repeat(n) {
-        val cmd = readlnOrNull() ?: ""
-        val type = cmd[0]
-
-        if (type == 'P') {
-            val x = cmd[2]
-            charCommands["P"]?.invoke(x)
-        } else {
-            noArgCommands[type.toString()]?.invoke()
-        }
-    }
-
-    val sb = StringBuilder()
-    list.forEach { sb.append(it) }
-    print(sb)
+    print(leftList.joinToString("") + rightList.joinToString(""))
 }
