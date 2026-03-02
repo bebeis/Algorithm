@@ -1,55 +1,52 @@
-import java.io.*
-import java.lang.StringBuilder
 import java.util.*
 
-var graph = arrayOf<IntArray>()
-var visited = booleanArrayOf()
+fun main() = with(System.`in`.bufferedReader()) {
+    val (n, m, v) = readLine().split(" ").map { it.toInt() }
 
-fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
-    val (n, m, v) = this.readLine().split(" ").map { it.toInt() }
-    graph = Array(n) {IntArray(n)}
-    visited = BooleanArray(n)
-
+    val adj = Array(n + 1) { BooleanArray(n + 1) }
     repeat(m) {
-        val (x, y) = this.readLine().split(" ").map { it.toInt() }
-        graph[x-1][y-1] = 1
-        graph[y-1][x-1] = 1
+        val st = StringTokenizer(readLine())
+        val u = st.nextToken().toInt()
+        val v = st.nextToken().toInt()
+        adj[u][v] = true
+        adj[v][u] = true
     }
 
-    visited.fill(false)
-    println(dfs(n, v-1).trimEnd())
-
-    visited.fill(false)
-    println(bfs(n, v-1).trimEnd())
-}
-
-private fun dfs(n: Int, v: Int): String {
     val sb = StringBuilder()
+    var visited = BooleanArray(n + 1)
     visited[v] = true
-    sb.append("${v+1} ")
+    fun dfs(cur: Int) {
+        sb.append(cur).append(' ')
 
-    for (i in 0 until n) if (graph[v][i] == 1 && !visited[i]) sb.append(dfs(n, i))
-
-    return sb.toString()
-}
-
-private fun bfs(n: Int, v: Int): String {
-    val sb = StringBuilder()
-    val list = LinkedList<Int>()
-
-    list.add(v); visited[v] = true
-    sb.append("${v+1} ")
-
-    while (list.isNotEmpty()) {
-        val cur = list.poll()
-
-        for (i in 0 until n) {
-            if (graph[cur][i] == 1 && !visited[i]) {
-                list.add(i); visited[i] = true
-                sb.append("${i+1} ")
+        for (nxt in 1..n) {
+            if (adj[cur][nxt] && !visited[nxt]) {
+                visited[nxt] = true
+                dfs(nxt)
             }
         }
     }
+    dfs(v)
+    sb.append('\n')
 
-    return sb.toString()
+    visited = BooleanArray(n + 1)
+    fun bfs() {
+        val queue = ArrayDeque<Int>()
+        visited[v] = true
+        queue.offer(v)
+
+        while (queue.isNotEmpty()) {
+            val cur = queue.poll()
+            sb.append(cur).append(' ')
+
+            for (nxt in 1..n) {
+                if (adj[cur][nxt] && !visited[nxt]) {
+                    visited[nxt] = true
+                    queue.offer(nxt)
+                }
+            }
+        }
+    }
+    bfs()
+
+    print(sb)
 }
