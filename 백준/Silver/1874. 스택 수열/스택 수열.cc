@@ -1,34 +1,28 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int arr[100001];
-
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    int n, pos = 1, cur = 0;
-    stringstream ss;
+    cin.tie(0) -> sync_with_stdio(false);
+
+    stack<int> stack;
+    int cur = 1, n, popped;
     cin >> n;
-    stack<int> buf;
-    for (int i = 1; i <= n; i++) {
-        cin >> arr[i];
-    }
-    while (pos <= n) {
-        if (buf.empty()) {
-            buf.push(++cur);
-            ss << "+" << '\n';
-        } else if (buf.top() < arr[pos]) {
-            buf.push(++cur);
-            ss << "+" << '\n';
-        } else if (buf.top() == arr[pos]) {
-            ss << "-" << '\n';
-            buf.pop();
-            pos++;
-        } else { // buf.top() > arr[pos]
+    string ans;
+
+    for (int i = 0; i < n; i++) {
+        cin >> popped;
+
+        while (stack.empty() || stack.top() < popped) {
+            stack.push(cur++);
+            ans += "+\n";
+        }
+
+        if (stack.top() != popped) {
             cout << "NO";
             return 0;
         }
+        stack.pop();
+        ans += "-\n";
     }
-    cout << ss.str();
+    cout << ans;
 }
