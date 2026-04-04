@@ -1,36 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL); cout.tie(NULL);
-    int n, m, val, count = 0;
+int main() {
+    cin.tie(0)->sync_with_stdio(false);
+    int n, m, cnt = 0;
     cin >> n >> m;
-    deque<int> deq(n);
-    for (int i = 0; i < n; i++) {
-        deq[i] = i + 1;
-    }
+    deque<int> dq;
+    for (int i = 1; i <= n; i++) dq.push_back(i);
+
     while (m--) {
-        cin >> val;
-        if (val == deq.front()) {
-            deq.pop_front();
+        int t; cin >> t;
+        int pos = find(dq.begin(), dq.end(), t) - dq.begin();
+        int sz = dq.size();
+        if (pos <= sz - pos) {
+            cnt += pos;
+            rotate(dq.begin(), dq.begin() + pos, dq.end());
         } else {
-            int pos = find(deq.begin(), deq.end(), val) - deq.begin();
-            if (pos <= deq.size() / 2) {
-                while (deq.front() != val) {
-                    deq.push_back(deq.front());
-                    deq.pop_front();
-                    count++;
-                }
-            } else {
-                while (deq.front() != val) {
-                    deq.push_front(deq.back());
-                    deq.pop_back();
-                    count++;
-                }
-            }
-            deq.pop_front();
+            cnt += sz - pos;
+            rotate(dq.begin(), dq.end() - (sz - pos), dq.end());
         }
+        dq.pop_front();
     }
-    cout << count;
+    cout << cnt;
 }
