@@ -1,61 +1,54 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int n, m;
-char board[1001][1001]; 
-int dist_visit[1001][1001][2];
-int dx[] = { -1, 0, 1, 0 };
-int dy[] = { 0, 1, 0, -1 };
+int board[1001][1001];
+int dist[2][1001][1001]; // 벽을 뚫은 횟수, 좌표
+
+const int dx[] = {1, 0, -1, 0};
+const int dy[] = {0, 1, 0, -1};
+const int MAX_DRILL = 1;
 
 int main(void) {
-    cin.tie(0)->sync_with_stdio(false);
-    cin >> n >> m;
-    
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= m; j++) {
-            cin >> board[i][j];
+    int n, m;
+    scanf("%d %d", &n, &m);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            scanf("%1d", &board[i][j]);
         }
     }
 
-    queue<pair<pair<int, int>, bool>> Q;
-    Q.push({{1, 1}, false});
-    dist_visit[1][1][0] = 1; 
+    queue<tuple<int, int, int>> q;
+    q.push({0, 0, 0});
+    dist[0][0][0] = 1;
 
-    while (!Q.empty()) {
-        int x = Q.front().first.first;
-        int y = Q.front().first.second;
-        bool broken = Q.front().second;
-        Q.pop();
-
-        if (x == n && y == m) {
-            cout << dist_visit[x][y][broken];
+    while (!q.empty()) {
+        auto [cnt, cx, cy] = q.front();
+        q.pop();
+        if (cx == n - 1 && cy == m - 1) {
+            printf("%d", dist[cnt][cx][cy]);
             return 0;
         }
 
         for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            
-            // 배열 범위 체크
-            if (nx < 1 || nx > n || ny < 1 || ny > m) continue;
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
 
-            if (board[nx][ny] == '1') {
-                if (!broken) {
-                    if (dist_visit[nx][ny][1] == 0) { // 해당 상태를 방문하지 않았다면
-                        dist_visit[nx][ny][1] = dist_visit[x][y][0] + 1;
-                        Q.push({{nx, ny}, true});
-                    }
-                }
-            }
-            else { // 빈 공간인 경우
-                if (dist_visit[nx][ny][broken ? 1 : 0] == 0) { // 현재 상태로 방문하지 않았다면
-                    dist_visit[nx][ny][broken ? 1 : 0] = dist_visit[x][y][broken ? 1 : 0] + 1;
-                    Q.push({{nx, ny}, broken});
-                }
+            if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+
+            // nxt가 벽인 경우
+            if (board[nx][ny] == 1) {
+                if (cnt >= MAX_DRILL) continue;
+                if (dist[cnt + 1][nx][ny] != 0) continue;
+                dist[cnt + 1][nx][ny] = dist[cnt][cx][cy] + 1;
+                q.push({cnt + 1, nx, ny});
+            } else {
+                if (dist[cnt][nx][ny] != 0) continue;
+                dist[cnt][nx][ny] = dist[cnt][cx][cy] + 1;
+                q.push({cnt, nx, ny});
             }
         }
     }
-
-    // 도달 불가능한 경우
-    cout << -1;
+    printf("-1");
+    return 0;
 }
