@@ -1,14 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef unsigned long long ull;
 
-unsigned long long d[91];
+ull d[93][2];
 
 int main(void) {
-    ios::sync_with_stdio(false);
-    cin.tie(0); cout.tie(0);
-    int n;
-    cin >> n;
-    d[1] = d[2] = 1;
-    for (int i = 3; i <= n; i++) d[i] = d[i - 1] + d[i - 2];
-    cout << d[n];
+    cin.tie(0) -> sync_with_stdio(false);
+    ull n; cin >> n;
+
+    d[1][1] = 1;
+    d[1][0] = 0;
+
+    for (int i = 2; i <= n; i++) {
+        d[i][1] = d[i - 1][0];
+        d[i][0] = d[i - 1][1] + d[i - 1][0];
+    }
+
+    cout << d[n][1] + d[n][0];
 }
